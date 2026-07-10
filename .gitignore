@@ -1,0 +1,4 @@
+node_modules/
+dist/
+fixtures/*/output.luau
+fixtures/*/*.png

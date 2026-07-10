@@ -1,0 +1,9 @@
+output = "output.luau"
+
+[target.default]
+path = "sprite.png"
+tile_size = 64
+columns = 16
+
+[lucide]
+stroke_width = 2

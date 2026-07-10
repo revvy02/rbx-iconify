@@ -1,0 +1,27 @@
+{
+	"name": "rbx-iconify",
+	"version": "0.1.0",
+	"description": "Generates sprite sheets + Luau metadata from Iconify icon usage in Roblox Luau sources",
+	"license": "MIT",
+	"private": true,
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/revvy02/rbx-iconify.git"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@iarna/toml": "^2.2.5",
+		"@iconify/utils": "^2.2.0",
+		"@resvg/resvg-wasm": "^2.6.2",
+		"pngjs": "^7.0.0"
+	},
+	"devDependencies": {
+		"vitest": "^3"
+	}
+}

@@ -1,0 +1,5 @@
+local iconify = require("./output")
+iconify("lucide:x", "default")
+iconify("lucide:x:stroke_width=4", "default")
+iconify("lucide:x:stroke_width=1", "default")
+iconify("lucide:chevron-down", "default")

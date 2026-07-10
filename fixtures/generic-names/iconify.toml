@@ -1,0 +1,14 @@
+output = "output.luau"
+default_set = "lucide"
+
+[target.default]
+path = "sprite.png"
+tile_size = 64
+columns = 16
+
+[lucide]
+stroke_width = 2
+
+[default]
+close = "lucide:x"
+settings = "ph:gear-six"
