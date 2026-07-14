@@ -10,11 +10,11 @@
 //   icon data from the Iconify API (no local icon packages needed)
 //
 // Writes:
-//   sprite PNGs per target (split at 4096px max)
+//   sprite PNGs per target as <path>/<target>/<n>.png (split at 4096px max)
 //   Luau metadata at path from iconify.toml `output`
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, globSync, watch } from "fs"
-import { join, dirname, extname } from "path"
+import { readFileSync, writeFileSync, unlinkSync, mkdirSync, readdirSync, globSync, watch } from "fs"
+import { join, dirname } from "path"
 import { createRequire } from "module"
 import { initWasm, Resvg } from "@resvg/resvg-wasm"
 import { PNG } from "pngjs"
@@ -342,12 +342,6 @@ function renderIcon(entry, tileSize) {
 	return new Resvg(svg).render().pixels
 }
 
-function sheetPath(basePath, sheetNum) {
-	const ext = extname(basePath)
-	const base = basePath.slice(0, -ext.length)
-	return `${base}_${sheetNum}${ext}`
-}
-
 function generateSpriteSheets(iconList, config) {
 	for (const [targetName, targetConfig] of Object.entries(config.targets)) {
 		const { tileSize, columns } = targetConfig
@@ -361,6 +355,14 @@ function generateSpriteSheets(iconList, config) {
 		for (const entry of iconList) {
 			console.log(`  ${entry.variantKey}`)
 			tiles.push(renderIcon(entry, tileSize))
+		}
+
+		const sheetDir = join(ROOT, targetConfig.path, targetName)
+		mkdirSync(sheetDir, { recursive: true })
+
+		// The generator owns this dir — drop sheets left over from a larger icon set
+		for (const file of readdirSync(sheetDir)) {
+			if (/^\d+\.png$/.test(file)) unlinkSync(join(sheetDir, file))
 		}
 
 		const totalSheets = Math.ceil(tiles.length / maxPerSheet)
@@ -382,8 +384,7 @@ function generateSpriteSheets(iconList, config) {
 				}
 			}
 
-			const outPath = join(ROOT, sheetPath(targetConfig.path, s + 1))
-			mkdirSync(dirname(outPath), { recursive: true })
+			const outPath = join(sheetDir, `${s + 1}.png`)
 			writeFileSync(outPath, PNG.sync.write(sheet))
 			console.log(`  Wrote: ${outPath} (${sheetWidth}x${sheetHeight})`)
 		}

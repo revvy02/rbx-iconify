@@ -2,7 +2,7 @@ output = "output.luau"
 default_set = "lucide"
 
 [target.default]
-path = "sprite.png"
+path = "sprites"
 tile_size = 64
 columns = 16
 

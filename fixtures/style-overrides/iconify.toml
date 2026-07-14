@@ -1,7 +1,7 @@
 output = "output.luau"
 
 [target.default]
-path = "sprite.png"
+path = "sprites"
 tile_size = 64
 columns = 16
 

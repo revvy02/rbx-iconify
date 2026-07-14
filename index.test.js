@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync, existsSync } from "fs"
-import { join, dirname, extname } from "path"
+import { join, dirname } from "path"
 import { fileURLToPath } from "url"
 import { spawn } from "child_process"
 import TOML from "@iarna/toml"
@@ -48,12 +48,6 @@ function countIconEntries(luauSource, targetName) {
 	return iconMatches ? iconMatches.length : 0
 }
 
-function sheetPath(basePath, sheetNum) {
-	const ext = extname(basePath)
-	const base = basePath.slice(0, -ext.length)
-	return `${base}_${sheetNum}${ext}`
-}
-
 const fixtures = readdirSync(fixturesDir, { withFileTypes: true })
 	.filter((d) => d.isDirectory())
 	.map((d) => d.name)
@@ -85,7 +79,7 @@ describe.each(fixtures)("fixture: %s", (fixtureName) => {
 			const totalSheets = Math.ceil(iconCount / maxPerSheet)
 
 			for (let s = 1; s <= totalSheets; s++) {
-				const spritePath = join(dir, sheetPath(targetConfig.path, s))
+				const spritePath = join(dir, targetConfig.path, targetName, `${s}.png`)
 				expect(existsSync(spritePath)).toBe(true)
 
 				const iconsOnSheet =
