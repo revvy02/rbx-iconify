@@ -79,7 +79,7 @@ describe.each(fixtures)("fixture: %s", (fixtureName) => {
 			const totalSheets = Math.ceil(iconCount / maxPerSheet)
 
 			for (let s = 1; s <= totalSheets; s++) {
-				const spritePath = join(dir, targetConfig.path, targetName, `${s}.png`)
+				const spritePath = join(dir, config.output.sheets, targetName, `${s}.png`)
 				expect(existsSync(spritePath)).toBe(true)
 
 				const iconsOnSheet =

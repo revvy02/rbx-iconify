@@ -1,6 +1,6 @@
 {
 	"name": "rbx-iconify",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Generates sprite sheets + Luau metadata from Iconify icon usage in Roblox Luau sources",
 	"license": "MIT",
 	"private": true,

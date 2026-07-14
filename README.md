@@ -24,11 +24,13 @@ Create an `iconify.toml` in your project root:
 
 ```toml
 scan = ["src/**/*.luau"]
-output = "src/shared/iconify.luau"
 default_set = "lucide"
 
+[output]
+index = "src/shared/iconify.luau"
+sheets = "assets/images/iconify"
+
 [target.ui]
-path = "assets/images/iconify"
 tile_size = 64
 columns = 16
 ```
@@ -40,7 +42,7 @@ someIcon("lucide:x")
 someIcon("ph:gear-six")
 ```
 
-Run `rbx-iconify` from the project root (or `rbx-iconify --watch` during development). Each target gets its own directory under `path`, with sheets numbered inside it (here `assets/images/iconify/ui/1.png`), and the index module is written at `output`.
+Run `rbx-iconify` from the project root (or `rbx-iconify --watch` during development). Each target gets its own directory under `output.sheets`, with numbered sheets inside it (here `assets/images/iconify/ui/1.png`), and the index module is written at `output.index`.
 
 The generated module is a lookup function:
 
@@ -95,7 +97,11 @@ end
 -- Icon({ name = "lucide:x", color = Color3.fromRGB(255, 170, 0) })
 ```
 
-Sheets are capped at 4096px; overflow spills into `ui/2.png`, `ui/3.png`, etc. `icon.sheet` tells you which, so keying the asset map by sheet number keeps overflow transparent to call sites. Each target's directory is owned by the generator: stale numbered sheets from a previously larger icon set are deleted on regeneration.
+Sheets are capped at 4096px; overflow spills into `2.png`, `3.png`, etc. `icon.sheet` tells you which, so keying the asset map by sheet number keeps overflow transparent to call sites. Each target's sheet directory is owned by the generator: stale numbered sheets from a previously larger icon set are deleted on regeneration (though renaming or removing a target leaves its old directory behind).
+
+## Watch mode
+
+`rbx-iconify --watch` re-runs generation whenever scanned `.luau` sources change. Runs are debounced, regeneration is skipped when the set of icon references is unchanged, and the generated index module is ignored so the tool doesn't retrigger on its own output. `iconify.toml` is read once at startup, so config changes require a restart.
 
 ## Generic names
 

@@ -10,8 +10,8 @@
 //   icon data from the Iconify API (no local icon packages needed)
 //
 // Writes:
-//   sprite PNGs per target as <path>/<target>/<n>.png (split at 4096px max)
-//   Luau metadata at path from iconify.toml `output`
+//   sprite PNGs per target as <output.sheets>/<target>/<n>.png (split at 4096px max)
+//   Luau metadata at path from iconify.toml `output.index`
 
 import { readFileSync, writeFileSync, unlinkSync, mkdirSync, readdirSync, globSync, watch } from "fs"
 import { join, dirname } from "path"
@@ -63,12 +63,11 @@ function parseConfig(tomlString) {
 		if (key === "target") {
 			for (const [name, targetConfig] of Object.entries(value)) {
 				targets[name] = {
-					path: targetConfig.path,
 					tileSize: targetConfig.tile_size || 64,
 					columns: targetConfig.columns || 16,
 				}
 			}
-		} else if (key === "default") {
+		} else if (key === "default" || key === "output") {
 			// already captured above
 		} else if (key.includes(":")) {
 			iconOverrides[key] = value
@@ -77,8 +76,13 @@ function parseConfig(tomlString) {
 		}
 	}
 
+	if (!config.output?.index || !config.output?.sheets) {
+		throw new Error(`iconify.toml needs an [output] table with "index" (Luau module path) and "sheets" (sprite sheet directory)`)
+	}
+
 	return {
-		output: config.output,
+		indexPath: config.output.index,
+		sheetsDir: config.output.sheets,
 		scan: config.scan || null,
 		defaultSet: config.default_set || null,
 		targets,
@@ -118,7 +122,7 @@ function scanSourceFiles(root, prefixes, config) {
 	const allPrefixes = [...prefixes, "default"]
 	const prefixPattern = allPrefixes.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")
 	const regex = new RegExp(`["']((?:${prefixPattern}):[a-z0-9_-]+(?::[a-z0-9_=,]+)*)["']`, "gi")
-	const outputAbsPath = join(root, config.output)
+	const outputAbsPath = join(root, config.indexPath)
 
 	const files = config.scan
 		? config.scan.flatMap((pattern) => globSync(pattern, { cwd: root }).map((f) => join(root, f)))
@@ -357,7 +361,7 @@ function generateSpriteSheets(iconList, config) {
 			tiles.push(renderIcon(entry, tileSize))
 		}
 
-		const sheetDir = join(ROOT, targetConfig.path, targetName)
+		const sheetDir = join(ROOT, config.sheetsDir, targetName)
 		mkdirSync(sheetDir, { recursive: true })
 
 		// The generator owns this dir — drop sheets left over from a larger icon set
@@ -397,7 +401,7 @@ const ROOT = process.cwd()
 
 const tomlPath = join(ROOT, "iconify.toml")
 const config = parseConfig(readFileSync(tomlPath, "utf8"))
-const outputPath = join(ROOT, config.output)
+const outputPath = join(ROOT, config.indexPath)
 
 let prefixes = null
 let previousIconSetKey = null
