@@ -38,8 +38,8 @@ columns = 16
 Reference icons anywhere in your scanned sources as string literals:
 
 ```lua
-someIcon("lucide:x")
-someIcon("ph:gear-six")
+Icon("lucide:x")
+Icon("ph:gear-six")
 ```
 
 Run `rbx-iconify` from the project root (or `rbx-iconify --watch` during development). Each target gets its own directory under `output.sheets`, with numbered sheets inside it (here `assets/images/iconify/ui/1.png`), and the index module is written at `output.index`.
@@ -48,7 +48,6 @@ The generated module is a lookup function:
 
 ```lua
 local iconify = require(path.to.iconify)
-
 local icon = iconify("lucide:x", "ui")
 ```
 
@@ -112,8 +111,8 @@ settings = "ph:gear-six"
 ```
 
 ```lua
-someIcon("default:close")        -- → lucide:x (explicit alias)
-someIcon("default:chevron-down") -- → lucide:chevron-down (falls back to default_set)
+Icon("default:close")        -- → lucide:x (explicit alias)
+Icon("default:chevron-down") -- → lucide:chevron-down (falls back to default_set)
 ```
 
 Swap the whole icon set for your game by changing one line of config.
@@ -131,7 +130,7 @@ stroke_width = 3       # just this icon
 ```
 
 ```lua
-someIcon("lucide:x:stroke_width=1") -- call site wins; rendered as its own variant
+Icon("lucide:x:stroke_width=1") -- call site wins; rendered as its own variant
 ```
 
 Each distinct override combination becomes its own tile on the sheet. Currently `stroke_width` is the supported style property.
